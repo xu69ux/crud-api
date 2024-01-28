@@ -29,3 +29,12 @@ export function addUser(user: User): void {
     user.id = v4();
     users.push(user);
 }
+
+export function updateUser(id: string, updatedUser: User): User | undefined {
+    const index = users.findIndex(user => user.id === id);
+    if (index !== -1) {
+      users[index] = { ...users[index], ...updatedUser };
+      return users[index];
+    }
+    return undefined;
+  }
