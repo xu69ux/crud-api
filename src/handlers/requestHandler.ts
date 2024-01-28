@@ -2,6 +2,7 @@ import { parse } from 'url';
 import { getUsers, getUserById, addUser } from '../database';
 import { User } from '../models/User';
 import { validateUser } from '../validators/validateUser';
+import { validate as validateUuid } from 'uuid';
 import { IncomingMessage, ServerResponse } from 'http';
 
 function handleRequest(req: IncomingMessage, res: ServerResponse) {
@@ -14,6 +15,11 @@ function handleRequest(req: IncomingMessage, res: ServerResponse) {
       res.end(JSON.stringify(users));
     } else if (pathname?.startsWith('/users/') && req.method === 'GET') {
       const id = pathname.split('/')[2];
+      if (!validateUuid(id)) {
+        res.statusCode = 400;
+        res.end('Invalid user ID');
+        return;
+      }
       const user = getUserById(id);
       if (user) {
         res.statusCode = 200;
