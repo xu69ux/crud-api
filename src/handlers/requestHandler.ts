@@ -1,5 +1,5 @@
 import { parse } from 'url';
-import { getUsers, getUserById, addUser, updateUser } from '../database';
+import { getUsers, getUserById, addUser, updateUser, deleteUser } from '../database';
 import { User } from '../models/User';
 import { validateUser } from '../validators/validateUser';
 import { validateUpdateUser } from '../validators/validateUpdateUser';
@@ -77,6 +77,21 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           res.end('User not found');
         }
       });
+    } else if (pathname?.startsWith('/users/') && req.method === 'DELETE') {
+      const id = pathname.split('/')[2];
+      if (!validateUuid(id)) {
+          res.statusCode = 400;
+          res.end('Invalid user ID');
+          return;
+      }
+      const isDeleted = deleteUser(id);
+      if (isDeleted) {
+          res.statusCode = 204;
+          res.end();
+      } else {
+          res.statusCode = 404;
+          res.end('User not found');
+      }
     }
   } else {
     res.statusCode = 400;

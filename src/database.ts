@@ -37,4 +37,13 @@ export function updateUser(id: string, updatedUser: User): User | undefined {
       return users[index];
     }
     return undefined;
-  }
+}
+
+export function deleteUser(id: string): boolean {
+    const index = users.findIndex(user => user.id === id);
+    if (index !== -1) {
+        users.splice(index, 1);
+        return true;
+    }
+    return false;
+}
