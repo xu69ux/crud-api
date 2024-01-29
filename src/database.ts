@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { User } from './models/User';
 import { v4 } from 'uuid';
 
@@ -6,6 +6,10 @@ import { v4 } from 'uuid';
 let users: User[] = [];
 
 export function init(): void {
+    if (!existsSync('db.json')) {
+        writeFileSync('db.json', JSON.stringify([]));
+    }
+
     const data = readFileSync('db.json', 'utf-8');
     users = JSON.parse(data);
 }
