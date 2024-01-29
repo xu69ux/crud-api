@@ -38,7 +38,7 @@ export function getUserById(id: string): User | undefined {
     return user;
 }
 
-export function addUser(user: User): void {
+export function addUser(user: User): User {
     const validationError = validateUser(user);
     if (validationError) {
         throw new InvalidUserError(validationError);
@@ -47,6 +47,7 @@ export function addUser(user: User): void {
     const newUser = { ...user, id: v4() };
     users = [...users, newUser];
     save();
+    return newUser;
 }
 
 export function updateUserById(id: string, updatedUser: User): User {
