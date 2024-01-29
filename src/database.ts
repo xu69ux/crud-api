@@ -1,49 +1,55 @@
+import { readFileSync, writeFileSync } from 'fs';
 import { User } from './models/User';
 import { v4 } from 'uuid';
 
 
-let users: User[] = [
-    {
-        id: 'fc008863-aefb-4d8b-a015-ae58ab28f535',
-        username: 'xu',
-        age: 31,
-        hobbies: ['reading', 'coding', 'yoga']
-    },
-    {
-        id: '64d45374-adbe-423a-ac6c-a84d3cf9108f',
-        username: 'uisky',
-        age: 44,
-        hobbies: ['eat', 'sleep', 'vodka']
-    }
-];
+let users: User[] = [];
+
+export function init(): void {
+    const data = readFileSync('db.json', 'utf-8');
+    users = JSON.parse(data);
+}
+
+export function save(): void {
+    const data = JSON.stringify(users);
+    writeFileSync('db.json', data);
+}
 
 export function getUsers(): User[] {
-    return users;
+    return [...users];
 }
 
 export function getUserById(id: string): User | undefined {
-    return users.find(user => user.id === id);
+    const user = users.find(user => user.id === id);
+    if (!user) {
+        throw new Error(`User with id ${id} not found`);
+    }
+    return user;
 }
 
 export function addUser(user: User): void {
-    user.id = v4();
-    users.push(user);
+    const newUser = { ...user, id: v4() };
+    users = [...users, newUser];
+    save();
 }
 
-export function updateUser(id: string, updatedUser: User): User | undefined {
+export function updateUser(id: string, updatedUser: User): User {
     const index = users.findIndex(user => user.id === id);
-    if (index !== -1) {
-      users[index] = { ...users[index], ...updatedUser };
-      return users[index];
+    if (index === -1) {
+        throw new Error(`User with id ${id} not found`);
     }
-    return undefined;
+    const newUser = { ...users[index], ...updatedUser };
+    users = [...users.slice(0, index), newUser, ...users.slice(index + 1)];
+    save();
+    return newUser;
 }
 
 export function deleteUser(id: string): boolean {
     const index = users.findIndex(user => user.id === id);
-    if (index !== -1) {
-        users.splice(index, 1);
-        return true;
+    if (index === -1) {
+        throw new Error(`User with id ${id} not found`);
     }
-    return false;
+    users = [...users.slice(0, index), ...users.slice(index + 1)];
+    save();
+    return true;
 }
