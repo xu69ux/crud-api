@@ -3,10 +3,8 @@ import http from 'http';
 import dotenv from 'dotenv';
 import cluster from 'cluster';
 import handleRequest from './handlers/requestHandler';
-import { init } from './database';
 
 dotenv.config();
-init();
 
 const port = Number(process.env.PORT);
 
