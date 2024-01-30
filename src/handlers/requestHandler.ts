@@ -17,7 +17,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const users = getUsers();
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(users));
+          res.end(JSON.stringify({ message: 'All users:', users }));
       } catch (error) {
           res.statusCode = 500;
           res.end('Internal server error');
@@ -34,7 +34,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const user = getUserById(id);
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(user));
+          res.end(JSON.stringify({ message: 'User found:', user }));
       } catch (error) {
           if (error instanceof UserNotFoundError) {
               res.statusCode = 404;
@@ -55,7 +55,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const newUser = addUser(user);
           res.statusCode = 201;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(newUser));
+          res.end(JSON.stringify({ message: 'User created successfully', user: newUser}));
         } catch (error) {
           if (error instanceof InvalidUserError) {
             res.statusCode = 400;
@@ -84,7 +84,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const updatedUser = updateUserById(id, user);
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(updatedUser));
+          res.end(JSON.stringify({ message: `User updated successfully: ` + JSON.stringify(updatedUser) }));
         } catch (error) {
           if (error instanceof UserNotFoundError) {
             res.statusCode = 404;
