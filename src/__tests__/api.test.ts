@@ -40,6 +40,14 @@ describe('POST /users', () => {
     const res = await request(server).post('/users').send(user);
     expect(res.statusCode).toEqual(400);
   });
+
+  it('should create a user and return user data', async () => {
+    const user = { username: 'Martin Alekseevich', age: 30, hobbies: ['eat'] };
+    const res = await request(server).post('/users').send(user);
+    expect(res.statusCode).toEqual(201);
+    expect(res.body).toHaveProperty('id');
+    expect(res.body).toHaveProperty('username', user.username);
+  });
 });
 
 describe('PUT /users/{userId}', () => {
@@ -49,6 +57,23 @@ describe('PUT /users/{userId}', () => {
     const userId = responsePost.body.id;
     const responsePut = await request(server).put(`/users/${userId}`).send({ username: 'Martin' });
     expect(responsePut.statusCode).toEqual(200);
+  });
+
+  it('PUT /users/{userId} - should return 400 for invalid user data', async () => {
+    const user = { username: 'Martin Alekseevich', age: 30, hobbies: ['eat'] };
+    const responsePost = await request(server).post('/users').send(user);
+    const userId = responsePost.body.id;
+    const responsePut = await request(server).put(`/users/${userId}`).send({ username: 123 });
+    expect(responsePut.statusCode).toEqual(400);
+  });
+
+  it('PUT /users/{userId} - should return 404 if user not found', async () => {
+    const user = { username: 'Martin Alekseevich', age: 30, hobbies: ['eat'] };
+    const responsePost = await request(server).post('/users').send(user);
+    const userId = responsePost.body.id;
+    await request(server).delete(`/users/${userId}`);
+    const responsePut = await request(server).put(`/users/${userId}`).send({ username: 'Martin' });
+    expect(responsePut.statusCode).toEqual(404);
   });
 });
 
