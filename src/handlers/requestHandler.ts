@@ -12,7 +12,7 @@ function handleInternalServerError(res: ServerResponse) {
 export function handleRequest(req: IncomingMessage, res: ServerResponse) {
   if (req.url) {
     const { pathname } = parse(req.url, true);
-    if (pathname === '/users' && req.method === 'GET') {
+    if (pathname === '/api/users' && req.method === 'GET') {
       try {
           const users = getUsers();
           res.statusCode = 200;
@@ -23,8 +23,8 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           res.end('Internal server error');
       }
     }
-    if (pathname?.startsWith('/users/') && req.method === 'GET') {
-      const id = pathname.split('/')[2];
+    if (pathname?.startsWith('/api/users/') && req.method === 'GET') {
+      const id = pathname.split('/')[3];
       if (!validateUuid(id)) {
           res.statusCode = 400;
           res.end('Invalid user ID');
@@ -44,7 +44,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           }
       }
     }
-    if (pathname === '/users' && req.method === 'POST') {
+    if (pathname === '/api/users' && req.method === 'POST') {
       let body = '';
       req.on('data', chunk => {
         body += chunk.toString();
@@ -67,8 +67,8 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
       });
     }
     
-    if (pathname?.startsWith('/users/') && req.method === 'PUT') {
-      const id = pathname.split('/')[2];
+    if (pathname?.startsWith('/api/users/') && req.method === 'PUT') {
+      const id = pathname.split('/')[3];
       if (!validateUuid(id)) {
         res.statusCode = 400;
         res.end('Invalid user ID');
@@ -99,8 +99,8 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
       });
     }
     
-    if (pathname?.startsWith('/users/') && req.method === 'DELETE') {
-      const id = pathname.split('/')[2];
+    if (pathname?.startsWith('/api/users/') && req.method === 'DELETE') {
+      const id = pathname.split('/')[3];
       if (!validateUuid(id)) {
         res.statusCode = 400;
         res.end('Invalid user ID');
@@ -120,6 +120,9 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
         }
       }
     }
+  } else {
+    res.statusCode = 404;
+    res.end('Not found');
   }
 };
 
