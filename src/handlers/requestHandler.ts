@@ -17,7 +17,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const users = getUsers();
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify({ message: 'All users:', users }));
+          res.end(JSON.stringify(users.length === 0 ? { message: 'No users found' } : { message: 'Users found:',}));
       } catch (error) {
           res.statusCode = 500;
           res.end('Internal server error');
